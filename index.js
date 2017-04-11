@@ -1,27 +1,54 @@
 'use strict';
 var Alexa = require('alexa-sdk');
+var request = require('superagent');
 
 var APP_ID = 'amzn1.ask.skill.c777bb28-a73a-4428-94d7-b2eee73864c5';
 var SKILL_NAME = 'BBC Sport';
 
-/**
- * Array containing space facts.
- */
-var FACTS = [
-    "A year on Mercury is just 88 days long.",
-    "Despite being farther from the Sun, Venus experiences higher temperatures than Mercury.",
-    "Venus rotates counter-clockwise, possibly because of a collision in the past with an asteroid.",
-    "On Mars, the Sun appears about half the size as it does on Earth.",
-    "Earth is the only planet not named after a god.",
-    "Jupiter has the shortest day of all the planets.",
-    "The Milky Way galaxy will collide with the Andromeda Galaxy in about 5 billion years.",
-    "The Sun contains 99.86% of the mass in the Solar System.",
-    "The Sun is an almost perfect sphere.",
-    "A total solar eclipse can happen once every 1 to 2 years. This makes them a rare event.",
-    "Saturn radiates two and a half times more energy into space than it receives from the sun.",
-    "The temperature inside the Sun can reach 15 million degrees Celsius.",
-    "The Moon is moving approximately 3.8 cm away from our planet every year."
-];
+function getTeam(team) {
+    return {
+        'afc bournemouth': 'afc-bournemouth',
+        'arsenal': 'arsenal',
+        'burnley': 'burnley',
+        'chelsea': 'chelsea',
+        'crystal palace': 'crystal-palace',
+        'everton': 'everton',
+        'hull city': 'hull-city',
+        'leicester city': 'leicester-city',
+        'liverpool': 'liverpool',
+        'manchester city': 'manchester-city',
+        'manchester united': 'manchester-united',
+        'middlesbrough': 'middlesbrough',
+        'southampton': 'southampton',
+        'stoke city': 'stoke-city',
+        'sunderland': 'sunderland',
+        'swansea city': 'swansea-city',
+        'tottenham hotspur': 'tottenham-hotspur',
+        'watford': 'watford',
+        'west bromwich albion': 'west-bromwich-albion',
+        'west ham united': 'west-ham-united'
+    }[team.toLowerCase()] || null;
+}
+
+function buildURL(team) {
+    return 'http://push.api.bbci.co.uk/morph/data/bbc-morph-sport-football-scores-tabbed-teams-model/team/' + team + '/version/1.0.6'
+}
+
+function requestData(teamSlug, callback) {
+    request
+        .get(buildURL(teamSlug))
+        .end(function(err, res) {
+            if (res.status === 202) {
+                setTimeout(function() {
+                    requestData(teamSlug, callback);
+                }, 1000);
+            }
+
+            if (res.status === 200) {
+                callback(JSON.parse(res.text));
+            }
+        });
+}
 
 exports.handler = function(event, context, callback) {
     var alexa = Alexa.handler(event, context);
@@ -32,35 +59,38 @@ exports.handler = function(event, context, callback) {
 
 var handlers = {
     'LaunchRequest': function () {
-        this.emit('GetFact');
+        this.emit('TalkAboutTeam');
     },
-    'StoreNewTeam': function () {
+    'StoreTeamIntent': function () {
         this.emit('TalkAboutTeam');
     },
     'TalkAboutTeam': function () {
         var team = this.event.request.intent.slots.Team.value;
+        var teamSlug = getTeam(team);
 
-        this.emit(':tell', 'You chose team ' + team);
-    }
-    // 'GetFact': function () {
-    //     // Get a random space fact from the space facts list
-    //     var factIndex = Math.floor(Math.random() * FACTS.length);
-    //     var randomFact = FACTS[factIndex];
+        if (teamSlug === null) {
+            this.emit(':tellWithCard', 'Please give me the name of a premier league team.', team, SKILL_NAME, 'Unknown');
+            return;
+        }
 
-    //     // Create speech output
-    //     var speechOutput = "Here's your fact: " + randomFact;
+        requestData(teamSlug, function(events) {
+            if (events.fixtures.body.rounds.length) {
+                this.emit(':tellWithCard', team + ' are playing in the ' + events.fixtures.body.rounds[0].name.full + ' soon', team, SKILL_NAME, team);
+                return;
+            }
 
-    //     this.emit(':tellWithCard', speechOutput, SKILL_NAME, randomFact)
-    // },
+            this.emit(':tellWithCard', 'There are no upcomming fixtures for ' + team, team, SKILL_NAME, team);
+        }.bind(this));
+    },
     'AMAZON.HelpIntent': function () {
         var speechOutput = "You can say tell me a space fact, or, you can say exit... What can I help you with?";
         var reprompt = "What can I help you with?";
         this.emit(':ask', speechOutput, reprompt);
     },
     'AMAZON.CancelIntent': function () {
-        this.emit(':tell', 'Goodbye!');
+        this.emit(':tell', 'So long, suckers!');
     },
     'AMAZON.StopIntent': function () {
-        this.emit(':tell', 'Goodbye!');
+        this.emit(':tell', 'So long, suckers!');
     }
 };

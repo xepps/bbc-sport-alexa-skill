@@ -16,6 +16,7 @@
         "jmespath": "^0.15.0",
         "lodash": "^3.5.0",
         "sax": "^1.1.5",
+        "superagent": "^3.5.1",
         "xml2js": "^0.4.15",
         "xmlbuilder": "^2.6.2"
     }
