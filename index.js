@@ -1,8 +1,8 @@
 'use strict';
 var Alexa = require('alexa-sdk');
 
-var APP_ID = undefined; //OPTIONAL: replace with "amzn1.echo-sdk-ams.app.[your-unique-value-here]";
-var SKILL_NAME = 'Space Facts';
+var APP_ID = 'amzn1.ask.skill.c777bb28-a73a-4428-94d7-b2eee73864c5';
+var SKILL_NAME = 'BBC Sport';
 
 /**
  * Array containing space facts.
@@ -34,19 +34,24 @@ var handlers = {
     'LaunchRequest': function () {
         this.emit('GetFact');
     },
-    'GetNewFactIntent': function () {
-        this.emit('GetFact');
+    'StoreNewTeam': function () {
+        this.emit('TalkAboutTeam');
     },
-    'GetFact': function () {
-        // Get a random space fact from the space facts list
-        var factIndex = Math.floor(Math.random() * FACTS.length);
-        var randomFact = FACTS[factIndex];
+    'TalkAboutTeam': function () {
+        var team = this.event.request.intent.slots.Team.value;
 
-        // Create speech output
-        var speechOutput = "Here's your fact: " + randomFact;
+        this.emit(':tell', 'You chose team ' + team);
+    }
+    // 'GetFact': function () {
+    //     // Get a random space fact from the space facts list
+    //     var factIndex = Math.floor(Math.random() * FACTS.length);
+    //     var randomFact = FACTS[factIndex];
 
-        this.emit(':tellWithCard', speechOutput, SKILL_NAME, randomFact)
-    },
+    //     // Create speech output
+    //     var speechOutput = "Here's your fact: " + randomFact;
+
+    //     this.emit(':tellWithCard', speechOutput, SKILL_NAME, randomFact)
+    // },
     'AMAZON.HelpIntent': function () {
         var speechOutput = "You can say tell me a space fact, or, you can say exit... What can I help you with?";
         var reprompt = "What can I help you with?";
