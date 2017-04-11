@@ -1,6 +1,7 @@
 'use strict';
 var Alexa = require('alexa-sdk');
 var request = require('superagent');
+var moment = require('moment');
 
 var APP_ID = 'amzn1.ask.skill.c777bb28-a73a-4428-94d7-b2eee73864c5';
 var SKILL_NAME = 'BBC Sport';
@@ -50,6 +51,31 @@ function requestData(teamSlug, callback) {
         });
 }
 
+function getMyTeam(team, homeTeam, awayTeam) {
+    return homeTeam.name.first.toLowerCase() === team.toLowerCase()
+        ? homeTeam
+        : awayTeam;
+}
+
+function getOppositionTo(team, homeTeam, awayTeam) {
+    return homeTeam.name.first.toLowerCase() === team.toLowerCase()
+        ? awayTeam
+        : homeTeam;
+}
+
+function getNextFixture(team, fixtures) {
+    if (fixtures.rounds.length) {
+        var event = fixtures.rounds[0].events[0];
+        var myTeam = getMyTeam(team, event.homeTeam, event.awayTeam).name.first;
+        var opposingTeam = getOppositionTo(team, event.homeTeam, event.awayTeam).name.first;
+        var fromNow = moment(event.startTime).fromNow();
+
+        return myTeam + ' are playing ' + opposingTeam + ' in ' + fromNow;
+    }
+
+    return null;
+}
+
 exports.handler = function(event, context, callback) {
     var alexa = Alexa.handler(event, context);
     alexa.APP_ID = APP_ID;
@@ -74,12 +100,14 @@ var handlers = {
         }
 
         requestData(teamSlug, function(events) {
-            if (events.fixtures.body.rounds.length) {
-                this.emit(':tellWithCard', team + ' are playing in the ' + events.fixtures.body.rounds[0].name.full + ' soon', team, SKILL_NAME, team);
-                return;
+            var nextFixture = getNextFixture(team, events.fixtures.body);
+
+            if(nextFixture) {
+                this.emit(':tellWithCard', nextFixture, SKILL_NAME, nextFixture, team);
+                return
             }
 
-            this.emit(':tellWithCard', 'There are no upcomming fixtures for ' + team, team, SKILL_NAME, team);
+            this.emit(':tellWithCard', 'There are no upcomming fixtures for ' + team, SKILL_NAME, 'There are no upcomming fixtures for ' + team, team);
         }.bind(this));
     },
     'AMAZON.HelpIntent': function () {
