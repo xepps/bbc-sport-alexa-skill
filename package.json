@@ -1,0 +1,22 @@
+{
+    "name": "BBC-Sport-Alexa-Skill",
+    "version": "0.0.1",
+    "main": "index.js",
+    "author": {
+        "name": "Kristian Epps",
+        "email": "kristian@xepps.com"
+    },
+    "contributors": [{
+        "name": "Jon Wilson",
+        "email": "jon.wilson01@bbc.co.uk"
+    }],
+    "dependencies": {
+        "alexa-sdk": "^1.0.3",
+        "aws-sdk": "^2.4.14",
+        "jmespath": "^0.15.0",
+        "lodash": "^3.5.0",
+        "sax": "^1.1.5",
+        "xml2js": "^0.4.15",
+        "xmlbuilder": "^2.6.2"
+    }
+}
