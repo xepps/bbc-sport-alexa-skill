@@ -35,6 +35,15 @@ var handlers = Alexa.CreateStateHandler('', {
             request(team.slug, function onError() {
                 this.emit(':tellWithCard', 'Response timed out. Please try again.', SKILL_NAME, 'Timed out', team.name);
             }, function onSuccess(events) {
+                if(team.slug === 'everton') {
+                    this.response
+                        .speak('Everton are playing today, here\'s the action')
+                        .audioPlayerPlay('REPLACE_ALL', radioUrl, team.slug, null, 0);
+
+                    this.emit(':responseReady');
+                    return;
+                }
+                
                 var nextFixture = getNextFixture(team.name, events.fixtures.body, true);
                 var lastFixture = getLastFixture(team.name, events.results.body);
 
