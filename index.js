@@ -8,8 +8,6 @@ var getNextFixture = require('./lib/next-fixture')
 var APP_ID = 'amzn1.ask.skill.7cc2e7da-10bc-4600-ab4e-c51dc85e013c';
 var SKILL_NAME = 'BBC Sport';
 
-
-
 exports.handler = function(event, context, callback) {
     var alexa = Alexa.handler(event, context);
     alexa.appId = APP_ID;
