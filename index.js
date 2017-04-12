@@ -1,6 +1,6 @@
 'use strict';
 var Alexa = require('alexa-sdk');
-var request = require('superagent');
+var request = require('./lib/request');
 var moment = require('moment');
 
 var APP_ID = 'amzn1.ask.skill.c777bb28-a73a-4428-94d7-b2eee73864c5';
@@ -29,37 +29,6 @@ function getTeam(team) {
         'west bromwich albion': 'west-bromwich-albion',
         'west ham united': 'west-ham-united'
     }[team.toLowerCase()] || null;
-}
-
-function buildURL(team) {
-    return 'http://push.api.bbci.co.uk/morph/data/bbc-morph-sport-football-scores-tabbed-teams-model/team/' + team + '/version/1.0.6'
-}
-
-function requestData(teamSlug, callback, invocations) {
-    request
-        .get(buildURL(teamSlug))
-        .end(function(err, res) {
-            if (res.status === 202) {
-                if (invocations === 4) {
-                    callback({
-                        success: false,
-                        events: null
-                    });
-                    return;
-                }
-
-                setTimeout(function() {
-                    requestData(teamSlug, callback, invocations + 1);
-                }, 500);
-            }
-
-            if (res.status === 200) {
-                callback({
-                    success: true,
-                    events: JSON.parse(res.text)
-                });
-            }
-        });
 }
 
 function getMyTeam(team, homeTeam, awayTeam) {
@@ -117,7 +86,7 @@ var handlers = {
             return;
         }
 
-        requestData(teamSlug, function(response) {
+        request(teamSlug, function(response) {
             if(!response.success) {
                 this.emit(':tellWithCard', 'Response timed out. Please try again.', SKILL_NAME, 'Timed out', team);
                 return;
