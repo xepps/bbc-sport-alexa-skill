@@ -6,7 +6,7 @@ var helper = require('./lib/helper');
 var getNextFixture = require('./lib/next-fixture');
 var getLastFixture = require('./lib/last-fixture');
 
-var APP_ID = 'amzn1.ask.skill.7cc2e7da-10bc-4600-ab4e-c51dc85e013c';
+var APP_ID = null;
 var SKILL_NAME = 'BBC Sport';
 
 exports.handler = function(event, context, callback) {
