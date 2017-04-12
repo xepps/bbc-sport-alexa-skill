@@ -3,7 +3,7 @@ var Alexa = require('alexa-sdk');
 
 var request = require('./lib/request');
 var helper = require('./lib/helper');
-var getNextFixture = require('./lib/next-fixtures')
+var getNextFixture = require('./lib/next-fixture')
 
 var APP_ID = 'amzn1.ask.skill.c777bb28-a73a-4428-94d7-b2eee73864c5';
 var SKILL_NAME = 'BBC Sport';
