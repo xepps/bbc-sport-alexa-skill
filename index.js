@@ -35,18 +35,29 @@ function buildURL(team) {
     return 'http://push.api.bbci.co.uk/morph/data/bbc-morph-sport-football-scores-tabbed-teams-model/team/' + team + '/version/1.0.6'
 }
 
-function requestData(teamSlug, callback) {
+function requestData(teamSlug, callback, invocations) {
     request
         .get(buildURL(teamSlug))
         .end(function(err, res) {
             if (res.status === 202) {
+                if (invocations === 5) {
+                    callback({
+                        success: false,
+                        events: null
+                    });
+                    return;
+                }
+
                 setTimeout(function() {
-                    requestData(teamSlug, callback);
-                }, 1000);
+                    requestData(teamSlug, callback, invocations + 1);
+                }, 500);
             }
 
             if (res.status === 200) {
-                callback(JSON.parse(res.text));
+                callback({
+                    success: true,
+                    events: JSON.parse(res.text)
+                });
             }
         });
 }
@@ -64,8 +75,8 @@ function getOppositionTo(team, homeTeam, awayTeam) {
 }
 
 function getHomeOrAway(team, homeTeam, awayTeam) {
-    return homeTeam.name.first === team 
-        ? 'at home' 
+    return homeTeam.name.first === team
+        ? ' at home'
         : ', away,'; // Commas are required in order for Alexa to pronounce team names correctly!
 }
 
@@ -77,7 +88,7 @@ function getNextFixture(team, fixtures) {
         var homeOrAway = getHomeOrAway(myTeam, event.homeTeam, event.awayTeam);
         var fromNow = moment(event.startTime).fromNow();
 
-        return myTeam + ' are playing ' + opposingTeam + ' ' + homeOrAway + ' ' + fromNow;
+        return myTeam + ' are playing ' + opposingTeam + homeOrAway + ' ' + fromNow;
     }
 
     return null;
@@ -106,12 +117,17 @@ var handlers = {
             return;
         }
 
-        requestData(teamSlug, function(events) {
-            var nextFixture = getNextFixture(team, events.fixtures.body);
+        requestData(teamSlug, function(response) {
+            if(!response.success) {
+                this.emit(':tellWithCard', 'Response timed out. Please try again.', SKILL_NAME, 'Timed out', team);
+                return;
+            }
+
+            var nextFixture = getNextFixture(team, response.events.fixtures.body);
 
             if(nextFixture) {
                 this.emit(':tellWithCard', nextFixture, SKILL_NAME, nextFixture, team);
-                return
+                return;
             }
 
             this.emit(':tellWithCard', 'There are no upcomming fixtures for ' + team, SKILL_NAME, 'There are no upcomming fixtures for ' + team, team);
