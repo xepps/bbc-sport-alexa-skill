@@ -63,14 +63,21 @@ function getOppositionTo(team, homeTeam, awayTeam) {
         : homeTeam;
 }
 
+function getHomeOrAway(team, homeTeam, awayTeam) {
+    return homeTeam.name.first === team 
+        ? 'at home' 
+        : ', away,'; // Commas are required in order for Alexa to pronounce team names correctly!
+}
+
 function getNextFixture(team, fixtures) {
     if (fixtures.rounds.length) {
         var event = fixtures.rounds[0].events[0];
         var myTeam = getMyTeam(team, event.homeTeam, event.awayTeam).name.first;
         var opposingTeam = getOppositionTo(team, event.homeTeam, event.awayTeam).name.first;
+        var homeOrAway = getHomeOrAway(myTeam, event.homeTeam, event.awayTeam);
         var fromNow = moment(event.startTime).fromNow();
 
-        return myTeam + ' are playing ' + opposingTeam + ' ' + fromNow;
+        return myTeam + ' are playing ' + opposingTeam + ' ' + homeOrAway + ' ' + fromNow;
     }
 
     return null;
