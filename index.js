@@ -1,26 +1,14 @@
 'use strict';
 var Alexa = require('alexa-sdk');
-var moment = require('moment');
 
 var request = require('./lib/request');
 var helper = require('./lib/helper');
+var getNextFixture = require('./lib/next-fixtures')
 
 var APP_ID = 'amzn1.ask.skill.c777bb28-a73a-4428-94d7-b2eee73864c5';
 var SKILL_NAME = 'BBC Sport';
 
-function getNextFixture(team, fixtures) {
-    if (fixtures.rounds.length) {
-        var event = fixtures.rounds[0].events[0];
-        var myTeam = helper.getMyTeam(team, event.homeTeam, event.awayTeam).name.first;
-        var opposingTeam = helper.getOppositionTo(team, event.homeTeam, event.awayTeam).name.first;
-        var homeOrAway = helper.getHomeOrAway(myTeam, event.homeTeam, event.awayTeam);
-        var fromNow = moment(event.startTime).fromNow();
 
-        return myTeam + ' are playing ' + opposingTeam + homeOrAway + ' ' + fromNow;
-    }
-
-    return null;
-}
 
 exports.handler = function(event, context, callback) {
     var alexa = Alexa.handler(event, context);
@@ -49,6 +37,15 @@ var handlers = {
                 }
 
                 this.emit(':tellWithCard', 'There are no upcomming fixtures for ' + team.name, SKILL_NAME, 'There are no upcomming fixtures for ' + team.name, team.name);
+            }.bind(this));
+        }.bind(this));
+    },
+    'LastFixture': function() {
+        helper.verifyTeamName(this.event, function onValid(team) {
+            request(team.slug, function onError() {
+                this.emit(':tellWithCard', 'Response timed out. Please try again.', SKILL_NAME, 'Timed out', team.name);
+            }, function onSuccess(events) {
+
             }.bind(this));
         }.bind(this));
     },
