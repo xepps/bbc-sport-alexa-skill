@@ -3,7 +3,8 @@ var Alexa = require('alexa-sdk');
 
 var request = require('./lib/request');
 var helper = require('./lib/helper');
-var getNextFixture = require('./lib/next-fixture')
+var getNextFixture = require('./lib/next-fixture');
+var getLastFixture = require('./lib/last-fixture');
 
 var APP_ID = 'amzn1.ask.skill.c777bb28-a73a-4428-94d7-b2eee73864c5';
 var SKILL_NAME = 'BBC Sport';
@@ -45,7 +46,14 @@ var handlers = {
             request(team.slug, function onError() {
                 this.emit(':tellWithCard', 'Response timed out. Please try again.', SKILL_NAME, 'Timed out', team.name);
             }, function onSuccess(events) {
+                var lastFixture = getLastFixture(team.name, events.results.body);
 
+                if(lastFixture) {
+                    this.emit(':tellWithCard', lastFixture, SKILL_NAME, lastFixture, team.name);
+                    return;
+                }
+
+                this.emit(':tellWithCard', 'There are no previous fixtures for ' + team.name, SKILL_NAME, 'There are no previous fixtures for ' + team.name, team.name);
             }.bind(this));
         }.bind(this));
     },
