@@ -70,7 +70,7 @@ function getNextFixture(team, fixtures) {
         var opposingTeam = getOppositionTo(team, event.homeTeam, event.awayTeam).name.first;
         var fromNow = moment(event.startTime).fromNow();
 
-        return myTeam + ' are playing ' + opposingTeam + ' in ' + fromNow;
+        return myTeam + ' are playing ' + opposingTeam + ' ' + fromNow;
     }
 
     return null;
