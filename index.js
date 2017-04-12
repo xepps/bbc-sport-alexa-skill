@@ -40,7 +40,7 @@ function requestData(teamSlug, callback, invocations) {
         .get(buildURL(teamSlug))
         .end(function(err, res) {
             if (res.status === 202) {
-                if (invocations === 5) {
+                if (invocations === 4) {
                     callback({
                         success: false,
                         events: null
