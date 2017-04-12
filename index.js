@@ -30,7 +30,7 @@ var handlers = Alexa.CreateStateHandler('', {
     'StoreTeamIntent': function () {
         this.emit('NextFixture');
     },
-    'Team': function () {
+    'TeamIntent': function () {
         helper.verifyTeamName(this.event, function onValid(team) {
             request(team.slug, function onError() {
                 this.emit(':tellWithCard', 'Response timed out. Please try again.', SKILL_NAME, 'Timed out', team.name);
