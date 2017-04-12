@@ -49,6 +49,21 @@ function getHomeOrAway(team, homeTeam, awayTeam) {
         : ', away,'; // Commas are required in order for Alexa to pronounce team names correctly!
 }
 
+function verifyTeamName(event, onValid) {
+    var team = event.request.intent.slots.Team.value;
+    var teamSlug = getTeam(team);
+
+    if (teamSlug === null) {
+        this.emit(':tellWithCard', 'Please give me the name of a premier league team.', team, SKILL_NAME, 'Unknown');
+        return;
+    }
+
+    onValid({
+        name: team,
+        slug: teamSlug
+    });
+}
+
 function getNextFixture(team, fixtures) {
     if (fixtures.rounds.length) {
         var event = fixtures.rounds[0].events[0];
@@ -72,34 +87,25 @@ exports.handler = function(event, context, callback) {
 
 var handlers = {
     'LaunchRequest': function () {
-        this.emit('TalkAboutTeam');
+        this.emit('NextFixture');
     },
     'StoreTeamIntent': function () {
-        this.emit('TalkAboutTeam');
+        this.emit('NextFixture');
     },
-    'TalkAboutTeam': function () {
-        var team = this.event.request.intent.slots.Team.value;
-        var teamSlug = getTeam(team);
+    'NextFixture': function () {
+        verifyTeamName(this.event, function onValid(team) {
+            request(team.slug, function onError() {
+                this.emit(':tellWithCard', 'Response timed out. Please try again.', SKILL_NAME, 'Timed out', team.name);
+            }, function onSuccess(events) {
+                var nextFixture = getNextFixture(team.name, events.fixtures.body);
 
-        if (teamSlug === null) {
-            this.emit(':tellWithCard', 'Please give me the name of a premier league team.', team, SKILL_NAME, 'Unknown');
-            return;
-        }
+                if(nextFixture) {
+                    this.emit(':tellWithCard', nextFixture, SKILL_NAME, nextFixture, team.name);
+                    return;
+                }
 
-        request(teamSlug, function(response) {
-            if(!response.success) {
-                this.emit(':tellWithCard', 'Response timed out. Please try again.', SKILL_NAME, 'Timed out', team);
-                return;
-            }
-
-            var nextFixture = getNextFixture(team, response.events.fixtures.body);
-
-            if(nextFixture) {
-                this.emit(':tellWithCard', nextFixture, SKILL_NAME, nextFixture, team);
-                return;
-            }
-
-            this.emit(':tellWithCard', 'There are no upcomming fixtures for ' + team, SKILL_NAME, 'There are no upcomming fixtures for ' + team, team);
+                this.emit(':tellWithCard', 'There are no upcomming fixtures for ' + team.name, SKILL_NAME, 'There are no upcomming fixtures for ' + team.name, team.name);
+            }.bind(this));
         }.bind(this));
     },
     'AMAZON.HelpIntent': function () {
