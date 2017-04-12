@@ -67,14 +67,20 @@ var handlers = {
         }.bind(this));
     },
     'AMAZON.HelpIntent': function () {
-        var speechOutput = "You can say tell me a space fact, or, you can say exit... What can I help you with?";
-        var reprompt = "What can I help you with?";
-        this.emit(':ask', speechOutput, reprompt);
+        var speechOutput = "Ask me for information about any premier league team.";
+        this.response
+            .speak(speechOutput)
+            .listen(speechOutput);
+        this.emity(':responseReady');
     },
     'AMAZON.CancelIntent': function () {
-        this.emit(':tell', 'So long, suckers!');
+        this.response.speak('Ok, I\'ll be quiet.')
+            .audioPlayerStop();
+        this.emit(':responseReady');
     },
     'AMAZON.StopIntent': function () {
-        this.emit(':tell', 'So long, suckers!');
+        this.response.speak('Ok, I\'ll be quiet.')
+            .audioPlayerStop();
+        this.emit(':responseReady');
     }
 };
