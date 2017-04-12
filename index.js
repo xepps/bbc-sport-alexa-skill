@@ -5,14 +5,14 @@ var request = require('./lib/request');
 var helper = require('./lib/helper');
 var getNextFixture = require('./lib/next-fixture')
 
-var APP_ID = 'amzn1.ask.skill.c777bb28-a73a-4428-94d7-b2eee73864c5';
+var APP_ID = 'amzn1.ask.skill.7cc2e7da-10bc-4600-ab4e-c51dc85e013c';
 var SKILL_NAME = 'BBC Sport';
 
 
 
 exports.handler = function(event, context, callback) {
     var alexa = Alexa.handler(event, context);
-    alexa.APP_ID = APP_ID;
+    alexa.appId = APP_ID;
     alexa.registerHandlers(handlers);
     alexa.execute();
 };
