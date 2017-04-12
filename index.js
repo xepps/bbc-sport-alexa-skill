@@ -18,12 +18,34 @@ exports.handler = function(event, context, callback) {
     alexa.execute();
 };
 
-var handlers = {
+var handlers = Alexa.CreateStateHandler('', {
     'LaunchRequest': function () {
-        this.emit('NextFixture');
+        this.handler.state = 'START';
+
+        this.response
+            .speak('Ask me about a premier league team?');
+
+        this.emit(':responseReady');
     },
     'StoreTeamIntent': function () {
         this.emit('NextFixture');
+    },
+    'TeamIntent': function () {
+        helper.verifyTeamName(this.event, function onValid(team) {
+            request(team.slug, function onError() {
+                this.emit(':tellWithCard', 'Response timed out. Please try again.', SKILL_NAME, 'Timed out', team.name);
+            }, function onSuccess(events) {
+                var nextFixture = getNextFixture(team.name, events.fixtures.body, true);
+                var lastFixture = getLastFixture(team.name, events.results.body);
+
+                if(nextFixture) {
+                    this.emit(':tellWithCard', lastFixture + nextFixture, SKILL_NAME, lastFixture + nextFixture, team.name);
+                    return;
+                }
+
+                this.emit(':tellWithCard', 'There are no upcomming fixtures for ' + team.name, SKILL_NAME, 'There are no upcomming fixtures for ' + team.name, team.name);
+            }.bind(this));
+        }.bind(this));
     },
     'NextFixture': function () {
         helper.verifyTeamName(this.event, function onValid(team) {
@@ -83,4 +105,4 @@ var handlers = {
             .audioPlayerStop();
         this.emit(':responseReady');
     }
-};
+});

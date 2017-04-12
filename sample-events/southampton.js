@@ -16,7 +16,7 @@ module.exports = {
     "locale": "en-GB",
     "timestamp": "2017-04-11T14:15:16Z",
     "intent": {
-      "name": "NextFixture",
+      "name": "TeamIntent",
       "slots": {
         "Team": {
           "name": "Team",
