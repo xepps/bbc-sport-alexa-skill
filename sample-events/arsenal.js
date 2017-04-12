@@ -20,7 +20,7 @@ module.exports = {
       "slots": {
         "Team": {
           "name": "Team",
-          "value": "arsenal"
+          "value": "everton"
         }
       }
     }

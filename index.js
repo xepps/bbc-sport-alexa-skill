@@ -9,6 +9,8 @@ var getLastFixture = require('./lib/last-fixture');
 var APP_ID = null;
 var SKILL_NAME = 'BBC Sport';
 
+var radioUrl = 'https://s3.amazonaws.com/bbc-sport-info/Euro+2016+EnglandIceland+Round+of+16+BBC+Radio+5+Live+Post+Match+Reaction+62716.mp3';
+
 exports.handler = function(event, context, callback) {
     var alexa = Alexa.handler(event, context);
     alexa.appId = APP_ID;
@@ -28,6 +30,15 @@ var handlers = {
             request(team.slug, function onError() {
                 this.emit(':tellWithCard', 'Response timed out. Please try again.', SKILL_NAME, 'Timed out', team.name);
             }, function onSuccess(events) {
+                if(team.slug === 'everton') {
+                    this.response
+                        .speak('Everton are playing today, here\'s the action')
+                        .audioPlayerPlay('REPLACE_ALL', radioUrl, team.slug, null, 0);
+
+                    this.emit(':responseReady');
+                    return;
+                }
+
                 var nextFixture = getNextFixture(team.name, events.fixtures.body);
 
                 if(nextFixture) {
