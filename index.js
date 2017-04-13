@@ -9,7 +9,7 @@ var getLastFixture = require('./lib/last-fixture');
 var APP_ID = null;
 var SKILL_NAME = 'BBC Sport';
 
-var radioUrl = 'https://s3.amazonaws.com/bbc-sport-info/Euro+2016+EnglandIceland+Round+of+16+BBC+Radio+5+Live+Post+Match+Reaction+62716.mp3';
+var radioUrl = 'https://s3.amazonaws.com/YOUR_S3_BUCKET_WITH_SAMPLE_IN_IT/Euro+2016+EnglandIceland+Round+of+16+BBC+Radio+5+Live+Post+Match+Reaction+62716.mp3';
 
 exports.handler = function(event, context, callback) {
     var alexa = Alexa.handler(event, context);
@@ -43,7 +43,7 @@ var handlers = Alexa.CreateStateHandler('', {
                     this.emit(':responseReady');
                     return;
                 }
-                
+
                 var nextFixture = getNextFixture(team.name, events.fixtures.body, true);
                 var lastFixture = getLastFixture(team.name, events.results.body);
 
