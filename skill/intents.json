@@ -1,0 +1,52 @@
+{
+  "intents": [
+    {
+      "intent": "AMAZON.ResumeIntent"
+    },
+    {
+      "intent": "AMAZON.PauseIntent"
+    },
+    {
+      "slots": [
+        {
+          "name": "Team",
+          "type": "LIST_OF_TEAMS"
+        }
+      ],
+      "intent": "NextFixture"
+    },
+    {
+      "slots": [
+        {
+          "name": "Team",
+          "type": "LIST_OF_TEAMS"
+        }
+      ],
+      "intent": "TeamIntent"
+    },
+    {
+      "intent": "LastScorers"
+    },
+    {
+      "intent": "LastDraw"
+    },
+    {
+      "slots": [
+        {
+          "name": "Team",
+          "type": "LIST_OF_TEAMS"
+        }
+      ],
+      "intent": "LastFixture"
+    },
+    {
+      "intent": "AMAZON.HelpIntent"
+    },
+    {
+      "intent": "AMAZON.StopIntent"
+    },
+    {
+      "intent": "AMAZON.CancelIntent"
+    }
+  ]
+}

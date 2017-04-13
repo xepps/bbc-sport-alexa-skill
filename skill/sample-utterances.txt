@@ -1,0 +1,29 @@
+NextFixture when {Team} plays next
+NextFixture when does {Team} play next
+NextFixture when will {Team} play next
+NextFixture when {Team} will next play
+NextFixture who {Team} plays next
+NextFixture who does {Team} play next
+NextFixture about {Team} next match
+TeamIntent tell me about {Team}
+TeamIntent {Team}
+TeamIntent what are {Team} doing
+TeamIntent about {Team}
+TeamIntent {Team} news
+TeamIntent tell me {Team} news
+LastFixture about {Team} last match
+LastFixture who {Team} played last
+LastFixture who did {Team} play last
+LastFixture what {Team} last result was
+LastFixture last result for {Team}
+LastFixture was the score in {Team} last match
+LastFixture who won {Team} last match
+LastFixture did {Team} win their last match
+LastFixture did {Team} lose their last match
+LastFixture what was the result of {Team} last match
+LastScorers who scored in the manchester city match
+LastScorers last scorers for manchester city
+LastScorers score for manchester city
+LastDraw who scored in the last everton match
+LastDraw last scorers for everton
+LastDraw score for everton
