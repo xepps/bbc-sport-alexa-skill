@@ -97,6 +97,12 @@ var handlers = Alexa.CreateStateHandler('', {
             }.bind(this));
         }.bind(this));
     },
+    'LastScorers': function() {
+        this.emit(':tellWithCard', 'Elmohamady at 31 minutes with an own goal, Agüero at 48 minutes and Delph at 64 minutes scored for Manchester City while Ranocchia scored in the 85th minute for Hull City');
+    },
+    'LastDraw': function() {
+        this.emit(':tellWithCard', 'There were no scorers, it was a nil - nil draw', SKILL_NAME);
+    },
     'AMAZON.HelpIntent': function () {
         var speechOutput = "Ask me for information about any premier league team.";
         this.response
